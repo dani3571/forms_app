@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
           ),
             ListTile(
             title: const Text('Bloc'),
-            subtitle: const Text('Gestor de estado simple'),
+            subtitle: const Text('Gestor de estado completo'),
             trailing:const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => context.push('/bloc')
             
@@ -26,7 +26,14 @@ class HomeScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Divider(), 
-          )
+          ),
+             ListTile(
+            title: const Text('Nuevo Usuario'),
+            subtitle: const Text('Formulario de nuevo usuario'),
+            trailing:const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => context.push('/register')
+            
+          ),
         ],
       ),
     );
