@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:forms_app/presentation/blocs/register_cubit/register_cubit.dart';
 import 'package:forms_app/presentation/widgets/widgets.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -10,7 +12,10 @@ class RegisterScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Nuevo usuario'),
       ),
-      body: const _RegisterView(),
+      body: BlocProvider(
+        create: (context) => RegisterCubit(),
+        child: const _RegisterView(),
+      ),
     );
   }
 }
@@ -51,12 +56,16 @@ class _RegisterFormState extends State<_RegisterForm> {
   final GlobalKey<FormState> _formkey =
       GlobalKey<FormState>(); // * Para controlar el estado del formulario
 
+/*
   String username = '';
   String email = '';
   String password = '';
-
+*/
   @override
   Widget build(BuildContext context) {
+    final registerCubit = context.watch<
+        RegisterCubit>(); // ! Con el watch cada que el estado cambio se vuelve a renderizar
+
     return Form(
         key: _formkey,
         child: Column(
@@ -64,14 +73,16 @@ class _RegisterFormState extends State<_RegisterForm> {
             CustomTextFormField(
               label: 'Nombre de usuario',
               errorMessage: null,
-              hint: 'daniel@gmail.com',
-              onChanged: (value) => username = value,
+              hint: 'Daniel chavez',
+              onChanged: (value) {
+                // Gestor de estado cubit
+                registerCubit.usernameChanged(value);
+                _formkey.currentState!.validate();
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) return 'Campo requerido';
-                if (value.trim().isEmpty)
-                  return 'Campo requerido'; // ! Limpia espacios delante y atras
-                if (value.length < 6)
-                  return 'El usuario debe tener mas de 6 letras';
+                if (value.trim().isEmpty) return 'Campo requerido'; // ! Limpia espacios delante y atras
+                if (value.length < 6) return 'El usuario debe tener mas de 6 letras';
 
                 return null;
               },
@@ -79,11 +90,15 @@ class _RegisterFormState extends State<_RegisterForm> {
             const SizedBox(height: 10),
             CustomTextFormField(
               label: 'Correo electronico',
+              hint: 'daniel@gmail.com',
               errorMessage: null,
-              onChanged: (value) => email = value,
+              onChanged: (value) {
+                  registerCubit.emailChanged(value);
+                     _formkey.currentState!.validate();
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) return 'Campo requerido';
-                if (value.trim().isEmpty)return 'Campo requerido'; 
+                if (value.trim().isEmpty) return 'Campo requerido';
                 final emailRegExp = RegExp(
                   r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                 );
@@ -97,7 +112,10 @@ class _RegisterFormState extends State<_RegisterForm> {
               label: 'Contraseña',
               errorMessage: null,
               obscureText: true,
-              onChanged: (value) => password = value,
+              onChanged: (value) {
+                registerCubit.passwordChanged(value);
+                _formkey.currentState!.validate();
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) return 'Campo requerido';
                 if (value.trim().isEmpty)return 'Campo requerido'; // ! Limpia espacios delante y atras
@@ -111,7 +129,8 @@ class _RegisterFormState extends State<_RegisterForm> {
               onPressed: () {
                 final isValid = _formkey.currentState!.validate();
                 if (!isValid) return;
-                print('$username, $email, $password');
+              
+                registerCubit.onSubmit();
               },
               icon: const Icon(Icons.save),
               label: const Text('Crear usuario'),
