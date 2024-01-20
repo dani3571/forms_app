@@ -35,6 +35,7 @@ class _RegisterView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FlutterLogo(size: 200),
+              SizedBox(height: 20),
               _RegisterForm(),
               SizedBox(height: 20),
             ],
@@ -64,7 +65,7 @@ class _RegisterFormState extends State<_RegisterForm> {
   @override
   Widget build(BuildContext context) {
     final registerCubit = context.watch<
-        RegisterCubit>(); // ! Con el watch cada que el estado cambio se vuelve a renderizar
+        RegisterCubit>(); // ! Con el watch cada que el estado cambie se vuelve a renderizar
 
     return Form(
         key: _formkey,
