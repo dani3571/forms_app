@@ -46,91 +46,67 @@ class _RegisterView extends StatelessWidget {
   }
 }
 
-class _RegisterForm extends StatefulWidget {
+class _RegisterForm extends StatelessWidget {
   const _RegisterForm();
-
-  @override
-  State<_RegisterForm> createState() => _RegisterFormState();
-}
-
-class _RegisterFormState extends State<_RegisterForm> {
-  final GlobalKey<FormState> _formkey =
-      GlobalKey<FormState>(); // * Para controlar el estado del formulario
+ // * Si usariamos _formkey el widget tendria que ser StatefullWidget
+ //final GlobalKey<FormState> _formkey = GlobalKey<FormState>(); 
 
 /*
   String username = '';
   String email = '';
   String password = '';
 */
+  // * Para controlar el estado del formulario
   @override
   Widget build(BuildContext context) {
-    final registerCubit = context.watch<
-        RegisterCubit>(); // ! Con el watch cada que el estado cambie se vuelve a renderizar
+     // ! Con el watch cada que el estado cambie se vuelve a renderizar
+    final registerCubit = context.watch<RegisterCubit>();
+    final username = registerCubit.state.username;
+    final email = registerCubit.state.email;
+    final password = registerCubit.state.password;
 
     return Form(
-        key: _formkey,
+      //  key: _formkey,
         child: Column(
           children: [
             CustomTextFormField(
               label: 'Nombre de usuario',
-              errorMessage: null,
+              errorMessage: username.errorMessage,
               hint: 'Daniel chavez',
-              onChanged: (value) {
+              onChanged: (value) => registerCubit.usernameChanged(value), 
+              /* {
                 // Gestor de estado cubit
                 registerCubit.usernameChanged(value);
-                _formkey.currentState!.validate();
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) return 'Campo requerido';
-                if (value.trim().isEmpty) return 'Campo requerido'; // ! Limpia espacios delante y atras
-                if (value.length < 6) return 'El usuario debe tener mas de 6 letras';
-
-                return null;
-              },
+            //    _formkey.currentState!.validate();
+              },*/
             ),
             const SizedBox(height: 10),
             CustomTextFormField(
               label: 'Correo electronico',
               hint: 'daniel@gmail.com',
-              errorMessage: null,
+              errorMessage: email.errorMessage,
               onChanged: (value) {
-                  registerCubit.emailChanged(value);
-                     _formkey.currentState!.validate();
+                registerCubit.emailChanged(value);
+             //   _formkey.currentState!.validate();
               },
-              validator: (value) {
-                if (value == null || value.isEmpty) return 'Campo requerido';
-                if (value.trim().isEmpty) return 'Campo requerido';
-                final emailRegExp = RegExp(
-                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                );
-                // ! Si no hace match con el value del input
-                if (!emailRegExp.hasMatch(value))return 'No tiene formato de correo';
-                return null;
-              },
+              
             ),
             const SizedBox(height: 10),
             CustomTextFormField(
               label: 'Contraseña',
-              errorMessage: null,
+              errorMessage: password.messageError,
               obscureText: true,
               onChanged: (value) {
                 registerCubit.passwordChanged(value);
-                _formkey.currentState!.validate();
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) return 'Campo requerido';
-                if (value.trim().isEmpty)return 'Campo requerido'; // ! Limpia espacios delante y atras
-                if (value.length < 6)return 'La contraseña debe tener mas de 6 letras';
-
-                return null;
+              //  _formkey.currentState!.validate();
               },
             ),
             const SizedBox(height: 20),
             FilledButton.tonalIcon(
               onPressed: () {
-                final isValid = _formkey.currentState!.validate();
+                /*  final isValid = _formkey.currentState!.validate();
                 if (!isValid) return;
-              
+              */
                 registerCubit.onSubmit();
               },
               icon: const Icon(Icons.save),
